@@ -1,0 +1,16 @@
+---
+title: "Simple Website"
+author: "Taylor Bonar"
+date: "3/21/2021"
+output: html_document
+---
+
+# Hello and welcome to my profile!
+## This is the initial commit for my github website!
+
+## Use the following code to generate a simple webstire
+```{r}
+library("rmarkdown")
+# Uses _site.yml to create a simple site with navigation tabs
+render_site()
+```
