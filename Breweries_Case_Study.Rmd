@@ -117,7 +117,6 @@ medianIBUbyState = aggregate(beerAndBreweries2$IBU,
 colnames(medianABVbyState) = c("State", "ABV")
 colnames(medianIBUbyState) = c("State", "IBU")
 
-# TODO: Add better visualization, too many states creates clutter and can overwhelm data visualization
 ggplot(medianABVbyState, aes(x=State,y=ABV)) + 
   geom_col(fill = "#f28e1c") +
   labs(title = "Median Alcohol by Volume (ABV) for Each State") +
@@ -163,9 +162,6 @@ ggplot(beerAndBreweries2, aes(ABV)) +
   labs(title="Distribution of Alcohol by Volume") +
   xlab("Alcohol by Volume (ABV)") +
   ylab("Number of Beers")
-
-## TODO: Comment on statistics/distribution of ABV variable
-
 ```
 
 ### Is there an apparent relationship between the bitterness of the beer and its alcoholic content?
@@ -180,8 +176,6 @@ ggplot(beerAndBreweries2, aes(x=ABV, y=IBU)) +
   geom_smooth(method = 'gam', formula = y ~ s(x, bs = "cs")) +
   labs(title = "Relationship Between ABV and IBU", 
        subtitle = "An Upward Trend")
-
-## TODO: Comment on relationship and elaborate
 ```
 
 ### Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You decide to use KNN classification to investigate this relationship.  Provide statistical evidence one way or the other. You can of course assume your audience is comfortable with percentages … KNN is very easy to understand conceptually.
