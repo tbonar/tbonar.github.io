@@ -2,21 +2,21 @@ library(shiny)
 
 # Define UI ----
 ui <- fluidPage(
-  h1("U.S. Craft Beers Exploratory App"),
-  h5("Author: Taylor Bonar"),
+  navbarPage("U.S. Craft Beers Exploratory App",
+             tabPanel(
+               "Input Data",
+               sidebarLayout(
+                 # Creates side panel with Help Text and a File Input to accept only one CSV file
+                 sidebarPanel(
+                   helpText(p("Use the following form to upload a CSV to input the data for app to analyze.")),
+                   fileInput("beersInput", "Beers", multiple = F, accept = c('text/csv','text/comma-separated-values,text/plain','.csv'))),
+                 # Outputs contained in navigation bar
+                 mainPanel(
+                   dataTableOutput("beersDf")
+                 )
+               )
+             )),
   
-  sidebarLayout(
-    # Creates side panel with Help Text and a File Input to accept only one CSV file
-    sidebarPanel(
-      helpText(
-        strong("Inputting Data"),
-        p("Use the following form to insert a CSV to input the data for Craft Beers to analyze.")),
-      fileInput("beersInput", "Beers", multiple = F, accept = c('text/csv','text/comma-separated-values,text/plain','.csv'))),
-    # Outputs
-    mainPanel(
-      dataTableOutput("beersDf")
-      )
-  )
 )
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
