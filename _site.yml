@@ -1,6 +1,6 @@
 name: "tbonar-website"
 navbar:
-  title: "My Website"
+  title: "My Portfolio"
   left:
     - text: "Home"
       href: index.html

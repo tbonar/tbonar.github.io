@@ -1,16 +1,17 @@
 ---
-title: "Simple Website"
+title: "Hello and welcome to my portfolio!"
 author: "Taylor Bonar"
-date: "3/21/2021"
+date: "3/23/2021"
 output: html_document
 ---
 
-# Hello and welcome to my profile!
-## This is the initial commit for my github website!
+This site will contain various projects of my adventures into data science. Feel free to comment, explore, and much more.
 
-## Use the following code to generate a simple webstire
-```{r}
-library("rmarkdown")
-# Uses _site.yml to create a simple site with navigation tabs
-render_site()
-```
+### Announcements
+#### Checkout my recent [RShiny application](https://tbonar.shinyapps.io/CraftBeersApp/) to observe the Case 1 Study on Craft Beers! It's currently a work-in-progress so be sure to check back soon!
+
+### Who am I?
+As a short and sweet introduction, my name is Taylor Bonar and I am an aspiring data scientist pursuing a Masters of Science at Southern Methodist University. I have a Bachelor's in Computer Science and traditionally have a background in software development and automation in various languages (i.e. Python, Java, C++, bash, etc.).
+
+### Looking to Replicate my Github Site?
+Use my [Github Repository's](https://github.com/tbonar/tbonar.github.io) code to generate a simple website with Rmd files and a _site.yml for a rough basis. More instructions will be fleshed out in my repository's README, but, as a heads up, it's still a work in progress.
