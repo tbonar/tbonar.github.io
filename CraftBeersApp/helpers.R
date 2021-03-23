@@ -1,0 +1,1 @@
+install.packages(c("dplyr","ggplot2","maps","mapproj","stringr","tidyr","class","caret","e1071"))
