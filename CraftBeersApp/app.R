@@ -85,9 +85,9 @@ server <- function(input, output) {
   # Medians By State Outputs
   output$stateMedians <- renderPlot(
     {
-      mergedDf <- beersAndBreweries() %>% drop_na(IBU, ABV)
       # Check if option is ABV
       if(str_detect(input$abvIbuMediansChoice,"ABV")) {
+        mergedDf <- beersAndBreweries() %>% drop_na(IBU, ABV)
         medianABVbyState = aggregate(mergedDf$ABV,
                                      list(mergedDf$State),
                                      median)
@@ -98,6 +98,7 @@ server <- function(input, output) {
           theme(axis.text.x = element_text(size = 7, angle = 45, hjust = 1))
       } # Else check for IBU choice
       else if (str_detect(input$abvIbuMediansChoice,"IBU")) { 
+        mergedDf <- beersAndBreweries() %>% drop_na(IBU, ABV)
         medianIBUbyState = aggregate(mergedDf$IBU,
                                      list(mergedDf$State),
                                      median)
