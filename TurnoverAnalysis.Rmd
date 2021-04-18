@@ -1,0 +1,222 @@
+---
+title: "DDSAnalytics' Turnover Analysis"
+author: "Taylor Bonar"
+date: "4/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+library(readxl) #To read the xlsx data
+library(ggplot2) # Plotting data
+library(tidyverse) # helps tidy and give pipe :)
+library(inspectdf) # Useful package for exploring data frame objects
+library(caret) # Training
+library(e1071) # Naive Bayes
+library(class) # knn
+
+trainingSet = read.csv("./data/CaseStudy2-data.csv")
+testAttritionSet = read.csv("./data/CaseStudy2CompSet No Attrition.csv")
+testSalarySet = read_xlsx("./data/CaseStudy2CompSet No Salary.xlsx",sheet=1)
+
+```
+# What causes employees to leave a company?
+Many Fortune 100 companies look to retain talented, high-performing employees when searching for potential workers, but what factors into employees actually leaving volunatry? Could it be job involvement? Pay rates? Years since last promotions? Or something else entirely?
+
+Have no fear, DDSAnalytics aims to identify three factors from 35 variables that leads to employee attrition. With these identified variables, Frito-Lay can properly plan to reduce and prevent attrition and retain highly values employees longer.
+
+## Goals of Study
+The main goal of this study is to explore what potential factors, or rather variables, have the largest impact on employee retention. Once those variables are identified, we will use them to create prediction classification models that identify key predictors that lead to employee turnoverr rates.
+
+## Summary of Results
+The top 3 predictors of employee attrition are:
+* Var 1
+* Var 2
+* Var 3
+
+With this information, we can develop mitigation plans in our hiring and retention practices to reduce the likelyhood of losing high-potential employees who meet these targeted areas.
+
+# Exploratory Data Analysis: Exploring the Initial Data
+First, we must take a closer look at the variables within our training dataset that we have. We may need to mutate or transform some of these variables in order to find patterns for various levels.
+
+### Step 0: What is our dataset? And do we need to tidy/clean anything immediately?
+```{r}
+inspect_types(trainingSet) 
+# Looks like a lot of character classes that could be factors
+# Transforming chr variables to factors for use
+trainingSet[sapply(trainingSet, is.character)] <- lapply(trainingSet[sapply(trainingSet, is.character)], as.factor)
+testAttritionSet[sapply(testAttritionSet, is.character)] <- lapply(testAttritionSet[sapply(testAttritionSet, is.character)], as.factor)
+testSalarySet[sapply(testSalarySet, is.character)] <- lapply(testSalarySet[sapply(testSalarySet, is.character)], as.factor)
+
+# Do we have any missing values?
+inspect_na(trainingSet) # Nope
+inspect_na(testAttritionSet) # Same, no NAs
+inspect_na(testSalarySet) # Phew, none anywhere
+
+trainingSet$Over18 = NULL
+testAttritionSet$Over18 = NULL
+testSalarySet$Over18 = NULL
+```
+
+### Step 1: Data Exploration -- What patterns are in the data?
+```{r Patterns}
+summary(trainingSet)
+
+# Describe linear strength of variables using Pearson's r
+linear_corr <- filter(inspect_cor(trainingSet), !is.na(corr))
+head(linear_corr,10)
+# Monthly Income, TotalWorkingYears, JobLevel, YearsInCurrentRole, YearsAtCompany, PerformanceRating, PercenSalaryHike, YearsWithCurrManager, and Age have strong linear correlation, which should affect models
+# Plot the data for quantitative variables and look for patterns in regards to qualitative variables
+ggplot(trainingSet, aes(x=TotalWorkingYears,y=MonthlyIncome, color=Attrition)) + geom_point() + geom_smooth(method = "lm",formula = y~x)
+# Can see there's a sweet spot between No and Yes to Attrition about 6-7 years for those who make under 4,000/month and additionally, that employee turnover rate is higher than no attrition. Could this be a potential issue for those who make more starting out and see a lower increase in promotions/raises?
+# Lastly, we can observe that attrition generally does not occur as frequently as total working years and monthly income increases.
+ggplot(trainingSet, aes(x=YearsSinceLastPromotion, fill=Attrition)) + geom_histogram() #+ geom_density(alpha=.2, fill="blue")
+# Appears to be a pattern but generally weak, but more higher rates of attrition for those with 2.5 years or less of promotion
+
+# Exploring linear correlated fields
+# Top 3 Correlated Variables Sets
+ggplot(trainingSet, aes(x=JobLevel,y=MonthlyIncome)) + geom_bar(stat="identity", aes(fill=Attrition)) + ggtitle("Job Level vs. Monthly Income", subtitle = "Attrition Overview" )
+
+ggplot(trainingSet, aes(x=TotalWorkingYears)) + geom_bar(aes(fill=Attrition)) + ggtitle("Attrition vs. Total Working Year", subtitle = "Attrition Overview" )
+# Two spikes, one after about 2 years and one at 10 years with a close 6 years
+
+ggplot(trainingSet, aes(x=JobLevel)) + geom_bar(aes(fill=Attrition)) + ggtitle("Job Level vs. Monthly Income", subtitle = "Attrition Overview" )
+# Entry level position seem more likely to leave, than those at senior level
+
+# Exploring other fields
+ggplot(data=trainingSet, aes(YearsInCurrentRole)) +
+  geom_bar(aes(fill=Attrition), position="fill") +
+  ggtitle('Percentage of Attrition based on Years in Current Role')
+ggplot(data=trainingSet, aes(YearsAtCompany)) +
+  geom_bar(aes(fill=Attrition), position="fill") +
+  ggtitle('Percentage of Attrition based on Years at Company')
+ggplot(data=trainingSet, aes(WorkLifeBalance)) +
+  geom_bar(aes(fill=Attrition), position="fill") +
+  ggtitle('Percentage of Attrition based on Work Life Balance')
+ggplot(data=trainingSet, aes(NumCompaniesWorked)) +
+  geom_bar(aes(fill=Attrition), position="fill") +
+  ggtitle('Percentage of Attrition based on Number of Companies Worked')
+ggplot(data=trainingSet, aes(Education)) +
+  geom_bar(aes(fill=Attrition), position="fill") +
+  ggtitle('Percentage of Attrition based on Education')
+ggplot(data=trainingSet, aes(JobSatisfaction)) +
+  geom_bar(aes(fill=Attrition), position="fill") +
+  ggtitle('Percentage of Attrition based on Job Satisfaction')
+ggplot(data=trainingSet, aes(JobLevel)) +
+  geom_bar(aes(fill=Attrition), position="fill") +
+  ggtitle('Percentage of Attrition based on Job Level')
+ggplot(data=trainingSet, aes(JobRole)) +
+  geom_bar(aes(fill=Attrition), position="fill") +
+  ggtitle('Percentage of Attrition based on Job Role')
+
+```
+
+What top three explanatory variables might be able to explain the relationship to our response variable, attrition?
+
+### k-NN Modeling
+```{r k-NN Model}
+iterations = 250
+numK = 50
+masterAcc = matrix(nrow = iterations, ncol = numK)
+masterSen = matrix(nrow=iterations,ncol=numK)
+masterSpec = matrix(nrow=iterations,ncol=numK)
+splitPerc = .7
+
+explanatory_vars1 =c("MonthlyIncome","JobLevel","TotalWorkingYears","YearsInCurrentRole","YearsAtCompany","YearsWithCurrManager")
+
+for(j in 1:iterations) {
+  accs = data.frame(accuracy = numeric(30), k = numeric(30))
+  trainIndices = sample(1:dim(trainingSet)[1],round(splitPerc * dim(trainingSet)[1]))
+  train = trainingSet[trainIndices,]
+  test = trainingSet[-trainIndices,]
+  for(i in 1:numK) {
+    knnClassifications = knn(train[,explanatory_vars1], test[,explanatory_vars1], train$Attrition, k=i, prob = T)
+    CM = confusionMatrix(table(knnClassifications,test$Attrition))
+    
+    masterAcc[j,i] = CM$overall[1]
+    masterSen[j,i] = CM$byClass[1]
+    masterSpec[j,i] = CM$byClass[2]
+  }
+}
+
+# Graph k-values mean accuracies to observe best k-value to use
+MeanAcc = colMeans(masterAcc)
+plot(seq(1,numK,1),MeanAcc, type = "l",
+     main="Average Accuracy of k-values",
+     xlab = "k-values",
+     ylab = "Average Accuracy")
+# Grab most accurate k-value (i.e. the one with the highest average accuracy)
+strongK = which.max(MeanAcc)
+
+# Use KNN to classify attrition
+classifications = knn(trainingSet[,explanatory_vars1], testAttritionSet[,explanatory_vars1], trainingSet$Attrition, k = strongK, prob=T)
+
+knnSubmission = tibble("ID"=testAttritionSet$ID, "Attrition"= classifications)
+write.csv(nbSubmission,"Case2PredictionsTbonar Attrition.csv",row.names = FALSE)
+
+```
+### Naive Bayes Modeling
+```{r naive bayes, warning = F}
+# Creating a 70/30 split for training
+iterations = 500
+masterAcc = matrix(nrow=iterations)
+masterSen = matrix(nrow=iterations)
+masterSpec = matrix(nrow=iterations)
+splitPerc = .7
+
+explanatory_vars2 =c("MonthlyIncome","JobLevel","TotalWorkingYears","YearsInCurrentRole","YearsAtCompany","YearsWithCurrManager")
+
+masterAcc2 = matrix(nrow=iterations)
+masterSen2 = matrix(nrow=iterations)
+masterSpec2 = matrix(nrow=iterations)
+for(j in 1:iterations) {
+  trainIndices = sample(1:dim(trainingSet)[1],round(splitPerc * dim(trainingSet)[1]))
+  train = trainingSet[trainIndices,]
+  test = trainingSet[-trainIndices,]
+  nbModel = naiveBayes(train[,explanatory_vars2], train$Attrition)
+  CM2 = confusionMatrix(table(predict(nbModel,test[,explanatory_vars2]),test$Attrition))
+
+  masterSen2[j] = CM2$byClass[1]
+  masterSpec2[j] = CM2$byClass[2]
+}
+
+MeanSen2 = colMeans(masterSen2)
+MeanSpec2 = colMeans(masterSpec2)
+
+MeanSen2
+MeanSpec2
+
+# Sensitivity = 0.652669
+# Specificity = 0.6091083
+
+# Repeat for true test set
+predictedAttributes = predict(nbModel, newdata = testAttritionSet)
+nbSubmission = tibble("ID"= testAttritionSet$ID, "Attrition" = predictedAttributes)
+write.csv(nbSubmission,"Case2PredictionsTbonar Attrition.csv",row.names = FALSE)
+```
+### Compare and Contrasting Competing Models
+Naive Bayes model has a higher specificity and sensitivity, therefore it is the more accurate model when comparing the k-NN.
+## Salary Predictions
+```{r}
+library(olsrr)
+# HTML CSS - Libraries for Coefficient Table (e.g. tab_model())
+library(sjPlot)
+library(sjmisc)
+library(sjlabelled)
+fit1 = lm(MonthlyIncome ~ . , data=trainingSet)
+# Option 1 for auto-generating summary statistics -- PDF doesn't like, good for HTML quick referencing
+summary(fit1)
+confint(fit1)
+
+ols_step_both_p(fit1, premo = 0.05, details=T)
+
+fit2 = lm(MonthlyIncome ~ JobLevel+TotalWorkingYears+BusinessTravel+Gender+DailyRate+MonthlyRate, data=trainingSet)
+tab_model(fit2, show.se = T, show.stat = T, string.stat = "t-value", string.p = "p-value", string.se = "Std. Error", pred.labels = c("Intercept", "Sq. Ft. of Living Area"))
+summary(fit2)
+# Repeat for true test set
+predictedSalaries = predict(fit2, newdata = testSalarySet)
+submission = tibble("ID"= testSalarySet$ID, "MonthlyIncome" = predictedSalaries)
+write.csv(submission,"Case2PredictionsTbonar Salary.csv",row.names = FALSE)
+```
