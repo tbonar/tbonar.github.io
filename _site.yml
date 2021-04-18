@@ -6,3 +6,5 @@ navbar:
       href: index.html
     - text: "Case Study 1: Craft Beers in the US"
       href: Breweries_Case_Study.html
+    - text: "Case Study 2: Employee Attrition Turnover"
+      href: TurnoverAnalysis.html

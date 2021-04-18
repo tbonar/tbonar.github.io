@@ -14,7 +14,6 @@
 
 <title>Case Study 1: EDA to Create a new Beer for U.S. Craft Enthusiasts</title>
 
-<script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -289,6 +288,9 @@ $(document).ready(function () {
 <li>
   <a href="Breweries_Case_Study.html">Case Study 1: Craft Beers in the US</a>
 </li>
+<li>
+  <a href="TurnoverAnalysis.html">Case Study 2: Employee Attrition Turnover</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -392,36 +394,29 @@ colnames(beerAndBreweries)[8] = &quot;Brewery_Name&quot;
 
 # Show first six rows
 head(beerAndBreweries)</code></pre>
-<pre><code>##   Brewery_id     Beer_Name Beer_ID   ABV IBU                               Style
-## 1          1  Get Together    2692 0.045  50                        American IPA
-## 2          1 Maggie&#39;s Leap    2691 0.049  26                  Milk / Sweet Stout
-## 3          1    Wall&#39;s End    2690 0.048  19                   English Brown Ale
-## 4          1       Pumpion    2689 0.060  38                         Pumpkin Ale
-## 5          1    Stronghold    2688 0.060  25                     American Porter
-## 6          1   Parapet ESB    2687 0.056  47 Extra Special / Strong Bitter (ESB)
-##   Ounces       Brewery_Name        City State
-## 1     16 NorthGate Brewing  Minneapolis    MN
-## 2     16 NorthGate Brewing  Minneapolis    MN
-## 3     16 NorthGate Brewing  Minneapolis    MN
-## 4     16 NorthGate Brewing  Minneapolis    MN
-## 5     16 NorthGate Brewing  Minneapolis    MN
-## 6     16 NorthGate Brewing  Minneapolis    MN</code></pre>
+<pre><code>##   Brewery_id     Beer_Name Beer_ID   ABV IBU                               Style Ounces       Brewery_Name        City State
+## 1          1  Get Together    2692 0.045  50                        American IPA     16 NorthGate Brewing  Minneapolis    MN
+## 2          1 Maggie&#39;s Leap    2691 0.049  26                  Milk / Sweet Stout     16 NorthGate Brewing  Minneapolis    MN
+## 3          1    Wall&#39;s End    2690 0.048  19                   English Brown Ale     16 NorthGate Brewing  Minneapolis    MN
+## 4          1       Pumpion    2689 0.060  38                         Pumpkin Ale     16 NorthGate Brewing  Minneapolis    MN
+## 5          1    Stronghold    2688 0.060  25                     American Porter     16 NorthGate Brewing  Minneapolis    MN
+## 6          1   Parapet ESB    2687 0.056  47 Extra Special / Strong Bitter (ESB)     16 NorthGate Brewing  Minneapolis    MN</code></pre>
 <pre class="r"><code># Show last six rows
 tail(beerAndBreweries)</code></pre>
-<pre><code>##      Brewery_id                 Beer_Name Beer_ID   ABV IBU                   Style
-## 2405        556             Pilsner Ukiah      98 0.055  NA         German Pilsener
-## 2406        557  Heinnieweisse Weissebier      52 0.049  NA              Hefeweizen
-## 2407        557           Snapperhead IPA      51 0.068  NA            American IPA
-## 2408        557         Moo Thunder Stout      50 0.049  NA      Milk / Sweet Stout
-## 2409        557         Porkslap Pale Ale      49 0.043  NA American Pale Ale (APA)
-## 2410        558 Urban Wilderness Pale Ale      30 0.049  NA        English Pale Ale
-##      Ounces                  Brewery_Name          City State
-## 2405     12         Ukiah Brewing Company         Ukiah    CA
-## 2406     12       Butternuts Beer and Ale Garrattsville    NY
-## 2407     12       Butternuts Beer and Ale Garrattsville    NY
-## 2408     12       Butternuts Beer and Ale Garrattsville    NY
-## 2409     12       Butternuts Beer and Ale Garrattsville    NY
-## 2410     12 Sleeping Lady Brewing Company     Anchorage    AK</code></pre>
+<pre><code>##      Brewery_id                 Beer_Name Beer_ID   ABV IBU                   Style Ounces                  Brewery_Name
+## 2405        556             Pilsner Ukiah      98 0.055  NA         German Pilsener     12         Ukiah Brewing Company
+## 2406        557  Heinnieweisse Weissebier      52 0.049  NA              Hefeweizen     12       Butternuts Beer and Ale
+## 2407        557           Snapperhead IPA      51 0.068  NA            American IPA     12       Butternuts Beer and Ale
+## 2408        557         Moo Thunder Stout      50 0.049  NA      Milk / Sweet Stout     12       Butternuts Beer and Ale
+## 2409        557         Porkslap Pale Ale      49 0.043  NA American Pale Ale (APA)     12       Butternuts Beer and Ale
+## 2410        558 Urban Wilderness Pale Ale      30 0.049  NA        English Pale Ale     12 Sleeping Lady Brewing Company
+##               City State
+## 2405         Ukiah    CA
+## 2406 Garrattsville    NY
+## 2407 Garrattsville    NY
+## 2408 Garrattsville    NY
+## 2409 Garrattsville    NY
+## 2410     Anchorage    AK</code></pre>
 </div>
 <div id="for-metrics-and-later-data-analysis-beers-with-missing-ibus-and-abv-were-removed-for-the-below-reasons." class="section level3">
 <h3>For metrics and later data analysis, beers with missing IBUs and ABV were removed for the below reasons.</h3>
@@ -432,55 +427,40 @@ tail(beerAndBreweries)</code></pre>
 <h4>Alcohol by Volume (ABV) are not always printed, or rather required, to be displayed on beers by federal regulations. Instead, states regulate the advertisment of alcohol contents after the a unanimous vote in the Rubin vs Coors Brewing Co. 154 U.S.476 (1995). This court case argued against a 1935 decision ban on listing alcohol content to prevent “brewing wars”.</h4>
 <pre class="r"><code># Observe summary of data, only IBU and ABV contains NAs
 summary(beerAndBreweries)</code></pre>
-<pre><code>##    Brewery_id     Beer_Name            Beer_ID            ABV         
-##  Min.   :  1.0   Length:2410        Min.   :   1.0   Min.   :0.00100  
-##  1st Qu.: 94.0   Class :character   1st Qu.: 808.2   1st Qu.:0.05000  
-##  Median :206.0   Mode  :character   Median :1453.5   Median :0.05600  
-##  Mean   :232.7                      Mean   :1431.1   Mean   :0.05977  
-##  3rd Qu.:367.0                      3rd Qu.:2075.8   3rd Qu.:0.06700  
-##  Max.   :558.0                      Max.   :2692.0   Max.   :0.12800  
-##                                                      NA&#39;s   :62       
-##       IBU            Style               Ounces      Brewery_Name      
-##  Min.   :  4.00   Length:2410        Min.   : 8.40   Length:2410       
-##  1st Qu.: 21.00   Class :character   1st Qu.:12.00   Class :character  
-##  Median : 35.00   Mode  :character   Median :12.00   Mode  :character  
-##  Mean   : 42.71                      Mean   :13.59                     
-##  3rd Qu.: 64.00                      3rd Qu.:16.00                     
-##  Max.   :138.00                      Max.   :32.00                     
-##  NA&#39;s   :1005                                                          
-##      City              State          
-##  Length:2410        Length:2410       
-##  Class :character   Class :character  
-##  Mode  :character   Mode  :character  
-##                                       
-##                                       
-##                                       
+<pre><code>##    Brewery_id     Beer_Name            Beer_ID            ABV               IBU            Style               Ounces     
+##  Min.   :  1.0   Length:2410        Min.   :   1.0   Min.   :0.00100   Min.   :  4.00   Length:2410        Min.   : 8.40  
+##  1st Qu.: 94.0   Class :character   1st Qu.: 808.2   1st Qu.:0.05000   1st Qu.: 21.00   Class :character   1st Qu.:12.00  
+##  Median :206.0   Mode  :character   Median :1453.5   Median :0.05600   Median : 35.00   Mode  :character   Median :12.00  
+##  Mean   :232.7                      Mean   :1431.1   Mean   :0.05977   Mean   : 42.71                      Mean   :13.59  
+##  3rd Qu.:367.0                      3rd Qu.:2075.8   3rd Qu.:0.06700   3rd Qu.: 64.00                      3rd Qu.:16.00  
+##  Max.   :558.0                      Max.   :2692.0   Max.   :0.12800   Max.   :138.00                      Max.   :32.00  
+##                                                      NA&#39;s   :62        NA&#39;s   :1005                                       
+##  Brewery_Name           City              State          
+##  Length:2410        Length:2410        Length:2410       
+##  Class :character   Class :character   Class :character  
+##  Mode  :character   Mode  :character   Mode  :character  
+##                                                          
+##                                                          
+##                                                          
 ## </code></pre>
 <pre class="r"><code># We&#39;ll drop beers from the merged data that do not contain a value (i.e. NA)
 beerAndBreweries2 = beerAndBreweries %&gt;% drop_na(IBU, ABV)
 
 # Observe data contains no NA values
 summary(beerAndBreweries2)</code></pre>
-<pre><code>##    Brewery_id     Beer_Name            Beer_ID          ABV         
-##  Min.   :  1.0   Length:1405        Min.   :   1   Min.   :0.02700  
-##  1st Qu.: 95.0   Class :character   1st Qu.: 772   1st Qu.:0.05000  
-##  Median :198.0   Mode  :character   Median :1439   Median :0.05700  
-##  Mean   :224.2                      Mean   :1415   Mean   :0.05991  
-##  3rd Qu.:351.0                      3rd Qu.:2069   3rd Qu.:0.06800  
-##  Max.   :547.0                      Max.   :2692   Max.   :0.12500  
-##       IBU            Style               Ounces      Brewery_Name      
-##  Min.   :  4.00   Length:1405        Min.   : 8.40   Length:1405       
-##  1st Qu.: 21.00   Class :character   1st Qu.:12.00   Class :character  
-##  Median : 35.00   Mode  :character   Median :12.00   Mode  :character  
-##  Mean   : 42.71                      Mean   :13.51                     
-##  3rd Qu.: 64.00                      3rd Qu.:16.00                     
-##  Max.   :138.00                      Max.   :32.00                     
-##      City              State          
-##  Length:1405        Length:1405       
-##  Class :character   Class :character  
-##  Mode  :character   Mode  :character  
-##                                       
-##                                       
+<pre><code>##    Brewery_id     Beer_Name            Beer_ID          ABV               IBU            Style               Ounces     
+##  Min.   :  1.0   Length:1405        Min.   :   1   Min.   :0.02700   Min.   :  4.00   Length:1405        Min.   : 8.40  
+##  1st Qu.: 95.0   Class :character   1st Qu.: 772   1st Qu.:0.05000   1st Qu.: 21.00   Class :character   1st Qu.:12.00  
+##  Median :198.0   Mode  :character   Median :1439   Median :0.05700   Median : 35.00   Mode  :character   Median :12.00  
+##  Mean   :224.2                      Mean   :1415   Mean   :0.05991   Mean   : 42.71                      Mean   :13.51  
+##  3rd Qu.:351.0                      3rd Qu.:2069   3rd Qu.:0.06800   3rd Qu.: 64.00                      3rd Qu.:16.00  
+##  Max.   :547.0                      Max.   :2692   Max.   :0.12500   Max.   :138.00                      Max.   :32.00  
+##  Brewery_Name           City              State          
+##  Length:1405        Length:1405        Length:1405       
+##  Class :character   Class :character   Class :character  
+##  Mode  :character   Mode  :character   Mode  :character  
+##                                                          
+##                                                          
 ## </code></pre>
 </div>
 </div>
@@ -616,34 +596,34 @@ classifications = knn(train[,c(2,3)], test[,c(2,3)], train$Type, k = strongK, pr
 table(classifications,test$Type)</code></pre>
 <pre><code>##                
 ## classifications Ale IPA
-##             Ale 166  17
-##             IPA  12  88</code></pre>
+##             Ale 163  13
+##             IPA  22  85</code></pre>
 <pre class="r"><code># Statistics behind classifications table
 confusionMatrix(table(classifications,test$Type))</code></pre>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##                
 ## classifications Ale IPA
-##             Ale 166  17
-##             IPA  12  88
+##             Ale 163  13
+##             IPA  22  85
 ##                                           
-##                Accuracy : 0.8975          
-##                  95% CI : (0.8562, 0.9303)
-##     No Information Rate : 0.629           
+##                Accuracy : 0.8763          
+##                  95% CI : (0.8322, 0.9123)
+##     No Information Rate : 0.6537          
 ##     P-Value [Acc &gt; NIR] : &lt;2e-16          
 ##                                           
-##                   Kappa : 0.7783          
+##                   Kappa : 0.7326          
 ##                                           
-##  Mcnemar&#39;s Test P-Value : 0.4576          
+##  Mcnemar&#39;s Test P-Value : 0.1763          
 ##                                           
-##             Sensitivity : 0.9326          
-##             Specificity : 0.8381          
-##          Pos Pred Value : 0.9071          
-##          Neg Pred Value : 0.8800          
-##              Prevalence : 0.6290          
-##          Detection Rate : 0.5866          
-##    Detection Prevalence : 0.6466          
-##       Balanced Accuracy : 0.8853          
+##             Sensitivity : 0.8811          
+##             Specificity : 0.8673          
+##          Pos Pred Value : 0.9261          
+##          Neg Pred Value : 0.7944          
+##              Prevalence : 0.6537          
+##          Detection Rate : 0.5760          
+##    Detection Prevalence : 0.6219          
+##       Balanced Accuracy : 0.8742          
 ##                                           
 ##        &#39;Positive&#39; Class : Ale             
 ## </code></pre>
